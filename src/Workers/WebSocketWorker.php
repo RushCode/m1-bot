@@ -11,7 +11,6 @@ use React\EventLoop\Factory;
 
 class WebSocketWorker extends Events
 {
-
     private $subProtocol = 'json.api.smile-soft.com';
     private $wssHost = 'wss://m1online.net';
     private $host = 'm1online.net';
@@ -32,19 +31,17 @@ class WebSocketWorker extends Events
         $connector($this->wssHost, [$this->subProtocol], ['Host' => $this->host] + $this->auth->getBasicAuth())->then(
 
             function (WebSocket $stream) {
-
                 $stream->on('message', function (MessageInterface $msg) {
                     $this->message($msg);
                 });
 
-                $stream->on('close',  function ($code = null, $reason = null) {
+                $stream->on('close', function ($code = null, $reason = null) {
                     $this->close($code, $reason);
                 });
-
             }, function (\Exception $e) use ($loop) {
-            echo "Could not connect: {$e->getMessage()}\n";
-            $loop->stop();
-        }
+                echo "Could not connect: {$e->getMessage()}\n";
+                $loop->stop();
+            }
         );
 
         $loop->run();
