@@ -1,51 +1,50 @@
 <?php
 
-namespace leocata\m1Bot;
+namespace leocata\m1Bot\Workers;
 
-use leocata\M1\Api;
 use leocata\M1\HttpClientAuthorization;
+use leocata\m1Bot\Events;
 use Ratchet\Client\Connector;
 use Ratchet\Client\WebSocket;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use React\EventLoop\Factory;
 
-class CallbackWebSocket
+class WebSocketWorker extends Events
 {
 
     private $subProtocol = 'json.api.smile-soft.com';
     private $wssHost = 'wss://m1online.net';
     private $host = 'm1online.net';
     private $auth;
+    private $events;
 
-    public function __construct(HttpClientAuthorization $auth)
+    public function __construct(HttpClientAuthorization $auth, Events $events)
     {
+        $this->events = $events;
         $this->auth = $auth;
-
     }
 
     public function execute()
     {
-        $apiWrapper = new Api($this->auth);
-
         $loop = Factory::create();
         $connector = new Connector($loop);
 
-        $gearman = new \GearmanClient();
-        $gearman->addServer();
-
         $connector($this->wssHost, [$this->subProtocol], ['Host' => $this->host] + $this->auth->getBasicAuth())->then(
 
-            function (WebSocket $stream) use ($gearman, $apiWrapper) {
+            function (WebSocket $stream) {
 
-                $stream->on('message', function (MessageInterface $msg) use ($gearman, $apiWrapper) {
-                    $result = $apiWrapper->getApiCallbackMethod($msg);
-                    $gearman->doHighBackground($result->getMethodName(), $msg);
+                $stream->on('message', function (MessageInterface $msg) {
+                    $this->message($msg);
+                });
+
+                $stream->on('close',  function ($code = null, $reason = null) {
+                    $this->close($code, $reason);
                 });
 
             }, function (\Exception $e) use ($loop) {
-                echo "Could not connect: {$e->getMessage()}\n";
-                $loop->stop();
-            }
+            echo "Could not connect: {$e->getMessage()}\n";
+            $loop->stop();
+        }
         );
 
         $loop->run();
