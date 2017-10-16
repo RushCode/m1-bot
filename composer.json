@@ -1,0 +1,27 @@
+{
+  "name": "leocata/m1-bot",
+  "description": "PHP API M1",
+  "keywords": ["M1","php","api","client","bot","messenger"],
+  "license": "MIT",
+  "type": "library",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://github.com/RushCode/m1-bot/issues",
+    "source": "https://github.com/RushCode/m1-bot"
+  },
+  "authors": [
+    {
+      "name": "Leo Cata",
+      "email": "leocata@yandex.ru"
+    }
+  ],
+  "require": {
+    "ratchet/pawl": "^0.3",
+    "leocata/m1-api": "0.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "leocata\\m1Bot\\": "src"
+    }
+  }
+}
