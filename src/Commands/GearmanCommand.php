@@ -8,7 +8,6 @@ use leocata\m1Bot\Workers\GearmanWorker;
 
 class GearmanCommand extends Command
 {
-
     private $username = '';
     private $pass = '';
 
@@ -20,6 +19,7 @@ class GearmanCommand extends Command
     public function handle()
     {
         $auth = new HttpClientAuthorization($this->username, $this->pass);
+
         return new GearmanWorker($auth);
     }
 }

@@ -5,8 +5,8 @@ namespace leocata\m1Bot\Workers;
 use leocata\M1\Api;
 use leocata\M1\Methods\Request\GetUserInfo;
 
-class GearmanWorker {
-
+class GearmanWorker
+{
     private $apiConn;
     private $worker;
 
@@ -25,6 +25,7 @@ class GearmanWorker {
     {
         /** @var GetUserInfo $method */
         $method = $this->apiConn->sendApiRequest(new GetUserInfo());
+
         return $method->getUserId();
     }
 }

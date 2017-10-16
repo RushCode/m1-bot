@@ -6,7 +6,6 @@ use leocata\m1Bot\Interfaces\EventInterface;
 
 class Events implements EventInterface
 {
-
     public function message($msg)
     {
         return $msg;

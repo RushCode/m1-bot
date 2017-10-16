@@ -1,6 +1,7 @@
 <?php
 
 namespace leocata\m1Bot\Commands;
+
 use GetOpt\Command;
 use leocata\M1\HttpClientAuthorization;
 use leocata\m1Bot\Events;

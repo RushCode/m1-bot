@@ -24,6 +24,7 @@ class Bot
     protected function runWebSocketWorker($auth, $events)
     {
         $callbackWebSocket = new WebSocketWorker($auth, $events);
+
         return $callbackWebSocket->execute();
     }
 }
