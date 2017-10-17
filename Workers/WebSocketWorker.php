@@ -2,24 +2,26 @@
 
 namespace leocata\m1Bot\Workers;
 
-use leocata\M1\HttpClientAuthorization;
-use leocata\m1Bot\Events;
+use leocata\M1\Authorization;
+use leocata\m1Bot\Abstracts\MessageEvent;
+use leocata\m1Bot\Events\WebSocketEvents;
 use Ratchet\Client\Connector;
 use Ratchet\Client\WebSocket;
 use Ratchet\RFC6455\Messaging\MessageInterface;
 use React\EventLoop\Factory;
 
-class WebSocketWorker extends Events
+class WebSocketWorker
 {
     private $subProtocol = 'json.api.smile-soft.com';
     private $wssHost = 'wss://m1online.net';
     private $host = 'm1online.net';
     private $auth;
     private $events;
+    private $messageEvents;
 
-    public function __construct(HttpClientAuthorization $auth, Events $events)
+    public function __construct(Authorization $auth)
     {
-        $this->events = $events;
+        $this->events = new WebSocketEvents();
         $this->auth = $auth;
     }
 
@@ -31,15 +33,15 @@ class WebSocketWorker extends Events
         $connector($this->wssHost, [$this->subProtocol], ['Host' => $this->host] + $this->auth->getBasicAuth())->then(
 
             function (WebSocket $stream) {
-                $stream->on('message', function (MessageInterface $msg) {
-                    $this->message($msg);
+                $stream->on('message', function (MessageInterface $message) {
+                    $this->events->message($message);
                 });
 
                 $stream->on('close', function ($code = null, $reason = null) {
-                    $this->close($code, $reason);
+                    $this->events->close($code, $reason);
                 });
             }, function (\Exception $e) use ($loop) {
-                echo "Could not connect: {$e->getMessage()}\n";
+                $this->events->error($e);
                 $loop->stop();
             }
         );
@@ -93,5 +95,21 @@ class WebSocketWorker extends Events
     public function setSubProtocol(string $subProtocol)
     {
         $this->subProtocol = $subProtocol;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMessageEvents() : MessageEvent
+    {
+        return $this->messageEvents;
+    }
+
+    /**
+     * @param mixed $messageEvents
+     */
+    public function setMessageEvents($messageEvents)
+    {
+        $this->messageEvents = $messageEvents;
     }
 }

@@ -4,9 +4,9 @@ namespace leocata\m1Bot\Interfaces;
 
 interface EventInterface
 {
-    public function message($msg);
+    public function message($message);
 
     public function close($close, $reason);
 
-    public function error($exception);
+    public function error(\Exception $exception);
 }

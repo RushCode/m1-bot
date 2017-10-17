@@ -17,12 +17,12 @@
   ],
   "require": {
     "ratchet/pawl": "^0.3",
-    "leocata/m1-api": "0.*",
+    "leocata/m1-api": "0.0.11",
     "ulrichsg/getopt-php": "3.0.*"
   },
   "autoload": {
     "psr-4": {
-      "leocata\\m1Bot\\": "src"
+      "leocata\\m1Bot\\": "."
     }
   }
 }
