@@ -2,8 +2,8 @@
 
 namespace leocata\m1Bot\Workers;
 
-use leocata\M1\Authorization;
-use leocata\m1Bot\Abstracts\MessageEvent;
+use leocata\M1\Api;
+use leocata\m1Bot\Bot\BaseBot;
 use leocata\m1Bot\Events\WebSocketEvents;
 use Ratchet\Client\Connector;
 use Ratchet\Client\WebSocket;
@@ -17,12 +17,16 @@ class WebSocketWorker
     private $host = 'm1online.net';
     private $auth;
     private $events;
-    private $messageEvents;
+    private $apiWrapper;
+    private $gearmanClient;
 
-    public function __construct(Authorization $auth)
+    public function __construct(BaseBot $baseBot)
     {
         $this->events = new WebSocketEvents();
-        $this->auth = $auth;
+        $this->auth = $baseBot->getAuth();
+        $this->apiWrapper = new Api();
+        $this->gearmanClient = new \GearmanClient();
+        $this->gearmanClient->addServer();
     }
 
     public function execute()
@@ -34,9 +38,8 @@ class WebSocketWorker
 
             function (WebSocket $stream) {
                 $stream->on('message', function (MessageInterface $message) {
-                    $this->events->message($message);
+                    $this->events->message($message, $this->apiWrapper, $this->gearmanClient);
                 });
-
                 $stream->on('close', function ($code = null, $reason = null) {
                     $this->events->close($code, $reason);
                 });
@@ -50,27 +53,11 @@ class WebSocketWorker
     }
 
     /**
-     * @return string
-     */
-    public function getHost(): string
-    {
-        return $this->host;
-    }
-
-    /**
      * @param string $host
      */
     public function setHost(string $host)
     {
         $this->host = $host;
-    }
-
-    /**
-     * @return string
-     */
-    public function getWssHost(): string
-    {
-        return $this->wssHost;
     }
 
     /**
@@ -80,36 +67,11 @@ class WebSocketWorker
     {
         $this->wssHost = $wssHost;
     }
-
-    /**
-     * @return string
-     */
-    public function getSubProtocol(): string
-    {
-        return $this->subProtocol;
-    }
-
     /**
      * @param string $subProtocol
      */
     public function setSubProtocol(string $subProtocol)
     {
         $this->subProtocol = $subProtocol;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMessageEvents() : MessageEvent
-    {
-        return $this->messageEvents;
-    }
-
-    /**
-     * @param mixed $messageEvents
-     */
-    public function setMessageEvents($messageEvents)
-    {
-        $this->messageEvents = $messageEvents;
     }
 }

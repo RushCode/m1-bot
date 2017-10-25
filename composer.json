@@ -3,8 +3,8 @@
   "description": "PHP API M1",
   "keywords": ["M1","php","api","client","bot","messenger"],
   "license": "MIT",
-  "type": "project",
-  "minimum-stability": "dev",
+  "type": "library",
+  "minimum-stability": "alpha",
   "support": {
     "issues": "https://github.com/RushCode/m1-bot/issues",
     "source": "https://github.com/RushCode/m1-bot"
@@ -17,12 +17,25 @@
   ],
   "require": {
     "ratchet/pawl": "^0.3",
-    "leocata/m1-api": "0.0.11",
-    "ulrichsg/getopt-php": "3.0.*"
+    "leocata/m1-api": "^0",
+    "ulrichsg/getopt-php": "^3.0"
+  },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.0",
+    "phpunit/phpunit": "^6.4",
+    "phpunit/php-code-coverage": "^5.2"
   },
   "autoload": {
     "psr-4": {
-      "leocata\\m1Bot\\": "."
+      "leocata\\m1Bot\\": "./src"
     }
-  }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "leocata\\M1\\Tests\\": "./tests"
+    }
+  },
+  "bin": [
+    "mbot-cli"
+  ]
 }
