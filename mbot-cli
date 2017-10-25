@@ -69,7 +69,7 @@ if (empty($getOpt->getOption('bot'))) {
     exit;
 }
 $botName = $getOpt->getOption('bot');
-$file = __DIR__ . '/../' . $botName . '.php';
+$file = __DIR__ . '/../../../' . $botName . '.php';
 if (!file_exists($file)) {
     echo PHP_EOL . 'Don`t have bot file';
     exit;
